@@ -1,0 +1,35 @@
+{
+  "builders":[{
+    "type": "docker",
+    "image": "ubuntu",
+    "export_path": "containers/jenkins-master.tar",
+    "run_command": [
+      "-d",
+      "-i",
+      "-t",
+      "--name",
+      "jenkins-master-{{timestamp}}",
+      "{{.Image}}",
+      "/bin/bash"
+      ]
+
+    }],
+    "provisioners":[
+      {
+        "type": "shell",
+          "inline": ["apt-get -y update; apt-get install -y cron curl sudo wget python && wget https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb -O /tmp/puppetlabs.deb && sudo dpkg -i /tmp/puppetlabs.deb && sudo apt-get update && sudo apt-get install  puppet-agent"]
+      },
+      {
+        "type": "puppet-masterless",
+          "manifest_file": "puppet/environments/packer/manifests/jenkins-master.pp",
+          "manifest_dir": "puppet/environments",
+          "module_paths": ["puppet/modules"],
+          "execute_command": "{{.FacterVars}} sudo /opt/puppetlabs/bin/puppet apply --detailed-exitcodes --modulepath='{{.ModulePath}}' {{.ManifestFile}}"
+      },
+      {
+        "type": "shell",
+          "inline": ["chown -R jenkins:jenkins  /var/lib/jenkins/"]
+      }
+    ]
+
+}

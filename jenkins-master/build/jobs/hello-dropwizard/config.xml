@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.12.2">
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers/>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.40">
+    <script>node (&apos;master&apos;){
+   stage &apos;Checkout&apos;
+   git &apos;https://github.com/haroonzone/hello-dropwizard&apos;
+   stage &apos;Build application and Run Unit Test&apos;
+   def mvnHome = &apos;/usr&apos;
+   sh &quot;${mvnHome}/bin/mvn clean package&quot;
+    try {
+        sh &apos;mvn test -B&apos;
+    } catch(err) {
+        step([$class: &apos;JUnitResultArchiver&apos;, testResults: &apos;**/target/surefire-reports/TEST-*.xml&apos;])
+        throw err
+    }
+
+
+   stage &apos;Build Docker image&apos;
+
+   def image = docker.build(&apos;java:8-jdk&apos;, &apos;.&apos;)
+
+   stage &apos;Acceptance Tests&apos;
+   image.withRun(&apos;-p 8181:8080&apos;) {c -&gt;
+        sh &quot;${mvnHome}/bin/mvn verify&quot;
+   }
+ 
+//   stage &apos;Push image&apos;
+
+//   docker.withRegistry(&quot;http://172.28.1.3:5000&quot;, &quot;docker-registry&quot;) {
+//      image.tag(&quot;latest&quot;, true)
+//      image.push()
+//   }
+
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
