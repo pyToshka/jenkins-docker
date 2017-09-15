@@ -15,29 +15,31 @@
    stage &apos;Build application and Run Unit Test&apos;
    def mvnHome = &apos;/usr&apos;
    sh &quot;${mvnHome}/bin/mvn clean package&quot;
-    try {
-        sh &apos;mvn test -B&apos;
+    
+     try {
+        sh &quot;mvn test -B&quot;
     } catch(err) {
         step([$class: &apos;JUnitResultArchiver&apos;, testResults: &apos;**/target/surefire-reports/TEST-*.xml&apos;])
+
         throw err
     }
-
+    step([$class: &apos;ArtifactArchiver&apos;, artifacts: &apos;**/target/*.jar&apos;, fingerprint: true])
 
    stage &apos;Build Docker image&apos;
-
+   sh &apos;cp /var/lib/jenkins/jobs/Dockerfile ./&apos;
    def image = docker.build(&apos;java:8-jdk&apos;, &apos;.&apos;)
 
    stage &apos;Acceptance Tests&apos;
    image.withRun(&apos;-p 8181:8080&apos;) {c -&gt;
         sh &quot;${mvnHome}/bin/mvn verify&quot;
    }
- 
-//   stage &apos;Push image&apos;
+   try {
+        sh &quot;mvn test -B&quot;
+    } catch(err) {
+        step([$class: &apos;JUnitResultArchiver&apos;, testResults: &apos;**/target/surefire-reports/TEST-*.xml&apos;])
 
-//   docker.withRegistry(&quot;http://172.28.1.3:5000&quot;, &quot;docker-registry&quot;) {
-//      image.tag(&quot;latest&quot;, true)
-//      image.push()
-//   }
+        throw err
+    }
 
 }</script>
     <sandbox>true</sandbox>

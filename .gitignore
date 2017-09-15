@@ -93,3 +93,10 @@ nextBuildNumber
 /jenkins-master/build/jobs/hello-dropwizard/workspace/example.yaml
 /jenkins-master/build/jobs/hello-dropwizard/workspace/dependency-reduced-pom.xml
 /jenkins-master/build/jobs/hello-dropwizard/workspace/
+/jenkins-master/build/plugins/file-operations/
+/jenkins-master/build/plugins/file-operations.jpi
+packer.log
+registry/
+certs/
+/terraform/terraform.tfstate
+/terraform/terraform.tfstate.backup

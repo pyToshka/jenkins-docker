@@ -8,5 +8,5 @@ docker import containers/jenkins-master.tar  jenkins-master:latest
 docker-compose up --build --remove-orphans -d
 mkdir -p jenkins-master/build/jobs/hello-dropwizard/workspace
 chmod -R 777 jenkins-master/build/jobs/hello-dropwizard
-cp jenkins-master/build/Dockerfile jenkins-master/build/jobs/hello-dropwizard/workspace
+cp jenkins-master/build/Dockerfile jenkins-master/build/jobs/
 sleep 1
