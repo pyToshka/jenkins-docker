@@ -6,8 +6,8 @@
     "source_ami": "ami-cd0f5cb6",
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "subnet_id": "subnet-ca1b1793",
-    "vpc_id": "vpc-e142f185",
+    "subnet_id": "",
+    "vpc_id": "",
     "ami_name": "jenkins-app",
     "ssh_private_key_file":""
 },
